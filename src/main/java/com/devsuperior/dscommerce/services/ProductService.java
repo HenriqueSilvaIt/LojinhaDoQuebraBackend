@@ -2,6 +2,7 @@ package com.devsuperior.dscommerce.services;
 
 import javax.persistence.EntityNotFoundException;
 
+import com.devsuperior.dscommerce.entities.OrderItem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -68,18 +69,28 @@ public class ProductService {
         }
     }
 
-    @Transactional(propagation = Propagation.SUPPORTS)
+
+    @Transactional(propagation = Propagation.REQUIRED)
     public void delete(Long id) {
         try {
-            repository.deleteById(id);
-        }
-        catch (EmptyResultDataAccessException e) {
+            Product product = repository.findById(id)
+                    .orElseThrow(() -> new ResourceNotFoundException("Recurso não encontrado"));
+
+            // Desassociar OrderItems do produto
+            for (OrderItem item : product.getItems()) {
+                item.setProduct(null); // Remove a referência ao produto
+            }
+
+            // Agora exclua o produto
+            repository.delete(product);
+
+        } catch (EmptyResultDataAccessException e) {
             throw new ResourceNotFoundException("Recurso não encontrado");
-        }
-        catch (DataIntegrityViolationException e) {
+        } catch (DataIntegrityViolationException e) {
             throw new DatabaseException("Falha de integridade referencial");
         }
     }
+
 
     private void copyDtoToEntity(ProductDTO dto, Product entity) {
         entity.setName(dto.getName());

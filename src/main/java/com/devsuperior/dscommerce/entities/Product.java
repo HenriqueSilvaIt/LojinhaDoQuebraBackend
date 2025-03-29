@@ -31,9 +31,8 @@ public class Product {
     private Set<Category> categories = new HashSet<>();
 
 
-    @OneToMany(mappedBy = "id.product")
-    private Set<OrderItem> items = new HashSet<>();
-
+    @OneToMany(mappedBy = "id.product", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<OrderItem> items = new HashSet<>(); // Removido @JoinColumn
     public Product() {
     }
 

@@ -47,4 +47,13 @@ public class OrderController {
                 .buildAndExpand(dto.getId()).toUri();
         return ResponseEntity.created(uri).body(dto);
     }
+
+
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @DeleteMapping(value = "/{orderId}/items/{productId}")
+    public ResponseEntity<Void> deleteOrderItem(@PathVariable Long orderId, @PathVariable Long productId) {
+        service.deleteOrderItem(orderId, productId);
+        return ResponseEntity.noContent().build();
+    }
+
 }
