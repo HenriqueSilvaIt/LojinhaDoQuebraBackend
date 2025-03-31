@@ -90,8 +90,7 @@ public class ProductService {
             throw new DatabaseException("Falha de integridade referencial");
         }
     }
-
-
+    
     private void copyDtoToEntity(ProductDTO dto, Product entity) {
         entity.setName(dto.getName());
         entity.setDescription(dto.getDescription());

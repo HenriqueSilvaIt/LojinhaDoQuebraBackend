@@ -36,6 +36,8 @@ public class Product {
     public Product() {
     }
 
+
+
     public Product(Long id, String name, String description, Double price, String imgUrl, String barCode, LocalDate dateBuy, LocalDate dueDate,  Integer quantity) {
         this.id = id;
         this.name = name;

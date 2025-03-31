@@ -26,7 +26,6 @@ public class ProductDTO {
     @Positive(message = "O preço deve ser positivo")
     private Double price;
     private String imgUrl;
-    @Size(min = 12, message ="Código de barras deve ter no mínimo 10 caracteres")
     private String barCode;
     private LocalDate dateBuy;
     private LocalDate dueDate;
