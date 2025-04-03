@@ -35,6 +35,7 @@ import com.devsuperior.dscommerce.services.ProductService;
 @RequestMapping(value = "/products")
 public class ProductController {
 
+
     @Autowired
     private ProductService service;
 

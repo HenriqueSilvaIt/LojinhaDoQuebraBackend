@@ -90,7 +90,7 @@ public class ProductService {
             throw new DatabaseException("Falha de integridade referencial");
         }
     }
-    
+
     private void copyDtoToEntity(ProductDTO dto, Product entity) {
         entity.setName(dto.getName());
         entity.setDescription(dto.getDescription());
@@ -100,12 +100,12 @@ public class ProductService {
         entity.setDateBuy(dto.getDateBuy());
         entity.setDueDate(dto.getDueDate());
         entity.setQuantity(dto.getQuantity());
-        
+
         entity.getCategories().clear();
         for (CategoryDTO catDto : dto.getCategories()) {
-        	Category cat = new Category();
-        	cat.setId(catDto.getId());
-        	entity.getCategories().add(cat);
+            Category cat = new Category();
+            cat.setId(catDto.getId());
+            entity.getCategories().add(cat);
         }
     }
 }
