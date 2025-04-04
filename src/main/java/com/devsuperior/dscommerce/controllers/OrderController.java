@@ -33,12 +33,14 @@ public class OrderController {
     }
 
 
+
     @GetMapping
-    public ResponseEntity<List<OrderDTO>> findAll() {
-        List<OrderDTO> list = service.findAll();
-        return ResponseEntity.ok(list);
+    public ResponseEntity<Page<OrderDTO>> findAll(Pageable pageable, @RequestParam(value = "sortByTotal", required = false) String sortByTotal) {
+        Page<OrderDTO> dtoPage = service.findAll(pageable, sortByTotal);
+        return ResponseEntity.ok(dtoPage);
     }
-    
+
+
     @PreAuthorize("hasRole('ROLE_CLIENT')")
     @PostMapping
     public ResponseEntity<OrderDTO> insert(@Valid @RequestBody OrderDTO dto) {
