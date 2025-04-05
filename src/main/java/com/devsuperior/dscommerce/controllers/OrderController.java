@@ -10,6 +10,7 @@ import com.devsuperior.dscommerce.dto.ProductMinDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -35,11 +36,10 @@ public class OrderController {
 
 
     @GetMapping
-    public ResponseEntity<List<OrderDTO>> findAll() {
-        List<OrderDTO> list = service.findAll();
-        return ResponseEntity.ok(list);
+    public ResponseEntity<Page<OrderDTO>> findAll(@PageableDefault(page = 0, size = 10, sort = "moment", direction = org.springframework.data.domain.Sort.Direction.DESC) Pageable pageable) {
+        Page<OrderDTO> page = service.findAll(pageable);
+        return ResponseEntity.ok(page);
     }
-
 
     @PreAuthorize("hasRole('ROLE_CLIENT')")
     @PostMapping
