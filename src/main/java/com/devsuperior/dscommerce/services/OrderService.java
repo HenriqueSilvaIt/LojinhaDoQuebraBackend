@@ -49,11 +49,13 @@ public class OrderService {
         return new OrderDTO(order);
     }
 
-    @Transactional(readOnly = true)
-    public Page<OrderDTO> findAll(Pageable pageable) {
-        Page<Order> result = repository.findAll(pageable);
-        return result.map(OrderDTO::new); // Use o método de referência para o construtor
+   @Transactional(readOnly = true)
+    public List<OrderDTO> findAll() {
+        List<Order> result = repository.findAll();
+        return result.stream().map(x -> new OrderDTO(x)).toList();
     }
+
+
 
 
 
