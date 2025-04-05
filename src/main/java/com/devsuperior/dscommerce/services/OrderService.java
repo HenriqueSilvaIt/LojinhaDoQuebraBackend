@@ -1,9 +1,7 @@
 package com.devsuperior.dscommerce.services;
 
 import java.time.Instant;
-import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import com.devsuperior.dscommerce.dto.CategoryDTO;
 import com.devsuperior.dscommerce.dto.ProductMinDTO;
@@ -51,26 +49,13 @@ public class OrderService {
         return new OrderDTO(order);
     }
 
-
-    @Transactional(readOnly = true)
-    public Page<OrderDTO> findAll(Pageable pageable, String sortByTotal) {
-        Page<Order> result = repository.searchByOrder(pageable);
-        List<OrderDTO> dtos = result.getContent().stream()
-                .map(OrderDTO::new)
-                .collect(Collectors.toList());
-
-        if ("total".equals(sortByTotal)) {
-            dtos.sort(Comparator.comparing(dto -> dto.getItems().stream()
-                    .mapToDouble(item -> item.getPrice() * item.getQuantity())
-                    .sum()));
-        } else if ("total,desc".equals(sortByTotal)) {
-            dtos.sort(Comparator.comparing((OrderDTO dto) -> dto.getItems().stream()
-                    .mapToDouble(item -> item.getPrice() * item.getQuantity())
-                    .sum()).reversed());
-        }
-
-        return new org.springframework.data.domain.PageImpl<>(dtos, pageable, result.getTotalElements());
+   @Transactional(readOnly = true)
+    public List<OrderDTO> findAll() {
+        List<Order> result = repository.findAll();
+        return result.stream().map(x -> new OrderDTO(x)).toList();
     }
+
+
 
 
 

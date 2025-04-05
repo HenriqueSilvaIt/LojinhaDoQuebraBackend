@@ -35,9 +35,9 @@ public class OrderController {
 
 
     @GetMapping
-    public ResponseEntity<Page<OrderDTO>> findAll(Pageable pageable, @RequestParam(value = "sortByTotal", required = false) String sortByTotal) {
-        Page<OrderDTO> dtoPage = service.findAll(pageable, sortByTotal);
-        return ResponseEntity.ok(dtoPage);
+    public ResponseEntity<List<OrderDTO>> findAll() {
+        List<OrderDTO> list = service.findAll();
+        return ResponseEntity.ok(list);
     }
 
 

@@ -15,7 +15,6 @@ import java.util.Objects;
 import java.util.Set;
 
 public interface OrderRepository extends JpaRepository<Order, Long> {
-    @Query("SELECT obj FROM Order obj ")
-    Page<Order> searchByOrder( Pageable pageable);
+
 
 }
