@@ -34,10 +34,14 @@ public class OrderController {
 
 
 
+
     @GetMapping
-    public ResponseEntity<Page<OrderDTO>> findAll(Pageable pageable) {
-        Page<OrderDTO> list = service.findAll(pageable);
-        return ResponseEntity.ok(list);
+    public ResponseEntity<Page<OrderDTO>> findAll(Pageable pageable,
+                                                  @RequestParam(value = "date", required = false) String date,
+                                                  @RequestParam(value = "month", required = false) String month,
+                                                  @RequestParam(value = "week", required = false) String week) {
+        Page<OrderDTO> page = service.findAll(pageable, date, month, week);
+        return ResponseEntity.ok(page);
     }
 
 

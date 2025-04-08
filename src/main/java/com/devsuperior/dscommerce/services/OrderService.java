@@ -1,7 +1,11 @@
 package com.devsuperior.dscommerce.services;
 
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Locale;
 
 import com.devsuperior.dscommerce.dto.CategoryDTO;
 import com.devsuperior.dscommerce.dto.ProductMinDTO;
@@ -50,11 +54,37 @@ public class OrderService {
     }
 
     @Transactional(readOnly = true)
-    public Page<OrderDTO> findAll(Pageable pageable) {
-        Page<Order> result = repository.findAllWithItems(pageable);
-        return result.map(OrderDTO::new);
-    }
+    public Page<OrderDTO> findAll(Pageable pageable, String date, String month, String week) {
+        Page<Order> page;
 
+        if (date != null && !date.isEmpty()) {
+            LocalDate localDate = LocalDate.parse(date);
+            Instant instant = localDate.atStartOfDay(ZoneOffset.UTC).toInstant();
+            page = repository.findBySpecificDate(instant, pageable);
+        } else if (month != null && !month.isEmpty()) {
+            String[] parts = month.split("-");
+            int year = Integer.parseInt(parts[0]);
+            int monthNumber = Integer.parseInt(parts[1]);
+            page = repository.findByYearAndMonth(year, monthNumber, pageable);
+        } else if (week != null && !week.isEmpty()) {
+            // A lógica para converter o formato de semana 'YYYY-Www' para um Instant representativo pode variar.
+            // Uma abordagem é pegar o primeiro dia daquela semana.
+            try {
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-'W'ww-E", Locale.ENGLISH);
+                LocalDate localDate = LocalDate.parse(week + "-1", formatter); // '-1' representa a segunda-feira
+                Instant instant = localDate.atStartOfDay(ZoneOffset.UTC).toInstant();
+                // Como a consulta no repository usa YEARWEEK, podemos passar qualquer data da semana
+                page = repository.findByWeek(instant, pageable);
+            } catch (Exception e) {
+                System.err.println("Erro ao parsear a semana: " + week + " - " + e.getMessage());
+                page = repository.findAll(pageable); // Em caso de erro, busca todos
+            }
+        } else {
+            page = repository.findAll(pageable);
+        }
+
+        return page.map(OrderDTO::new);
+    }
 
 
     @Transactional
