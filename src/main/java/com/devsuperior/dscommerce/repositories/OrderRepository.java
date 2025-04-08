@@ -15,5 +15,10 @@ import java.util.Objects;
 import java.util.Set;
 
 public interface OrderRepository extends JpaRepository<Order, Long> {
+    @Query("SELECT DISTINCT o FROM Order o JOIN FETCH o.items WHERE o IN :orders")
+    List<Order> fetchOrdersWithItems(List<Order> orders);
 
+    @Query(value = "SELECT DISTINCT o FROM Order o JOIN FETCH o.items",
+            countQuery = "SELECT COUNT(DISTINCT o) FROM Order o") // Consulta de contagem explícita com DISTINCT
+    Page<Order> findAllWithItems(Pageable pageable);
 }

@@ -51,10 +51,9 @@ public class OrderService {
 
     @Transactional(readOnly = true)
     public Page<OrderDTO> findAll(Pageable pageable) {
-        Page<Order> result = repository.findAll(pageable);
+        Page<Order> result = repository.findAllWithItems(pageable);
         return result.map(OrderDTO::new);
     }
-
 
 
 
