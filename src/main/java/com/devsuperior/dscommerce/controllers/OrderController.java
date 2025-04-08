@@ -35,8 +35,8 @@ public class OrderController {
 
 
     @GetMapping
-    public ResponseEntity<List<OrderDTO>> findAll() {
-        List<OrderDTO> list = service.findAll();
+    public ResponseEntity<Page<OrderDTO>> findAll(Pageable pageable) {
+        Page<OrderDTO> list = service.findAll(pageable);
         return ResponseEntity.ok(list);
     }
 
