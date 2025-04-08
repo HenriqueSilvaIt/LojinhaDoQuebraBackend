@@ -44,6 +44,14 @@ public class OrderController {
         return ResponseEntity.ok(page);
     }
 
+    @GetMapping(value = "/total-sales")
+    public ResponseEntity<Double> getTotalSales(@RequestParam(value = "date", required = false) String date,
+                                                @RequestParam(value = "month", required = false) String month,
+                                                @RequestParam(value = "week", required = false) String week) {
+        Double totalSales = service.calculateTotalSales(date, month, week);
+        return ResponseEntity.ok(totalSales);
+    }
+
 
     @PreAuthorize("hasRole('ROLE_CLIENT')")
     @PostMapping

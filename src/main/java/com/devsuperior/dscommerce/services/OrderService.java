@@ -59,22 +59,26 @@ public class OrderService {
 
         if (date != null && !date.isEmpty()) {
             LocalDate localDate = LocalDate.parse(date);
-            Instant instant = localDate.atStartOfDay(ZoneOffset.UTC).toInstant();
-            page = repository.findBySpecificDate(instant, pageable);
+            Instant startOfDay = localDate.atStartOfDay(ZoneOffset.UTC).toInstant();
+            Instant endOfDay = localDate.plusDays(1).atStartOfDay(ZoneOffset.UTC).toInstant();
+            page = repository.findByMomentBetween(startOfDay, endOfDay, pageable);
         } else if (month != null && !month.isEmpty()) {
             String[] parts = month.split("-");
             int year = Integer.parseInt(parts[0]);
             int monthNumber = Integer.parseInt(parts[1]);
-            page = repository.findByYearAndMonth(year, monthNumber, pageable);
+            LocalDate firstDayOfMonth = LocalDate.of(year, monthNumber, 1);
+            LocalDate lastDayOfMonth = firstDayOfMonth.plusMonths(1).minusDays(1);
+            Instant startOfMonth = firstDayOfMonth.atStartOfDay(ZoneOffset.UTC).toInstant();
+            Instant endOfMonth = lastDayOfMonth.plusDays(1).atStartOfDay(ZoneOffset.UTC).toInstant();
+            page = repository.findByMomentBetween(startOfMonth, endOfMonth, pageable);
         } else if (week != null && !week.isEmpty()) {
-            // A lógica para converter o formato de semana 'YYYY-Www' para um Instant representativo pode variar.
-            // Uma abordagem é pegar o primeiro dia daquela semana.
             try {
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-'W'ww-E", Locale.ENGLISH);
-                LocalDate localDate = LocalDate.parse(week + "-1", formatter); // '-1' representa a segunda-feira
-                Instant instant = localDate.atStartOfDay(ZoneOffset.UTC).toInstant();
-                // Como a consulta no repository usa YEARWEEK, podemos passar qualquer data da semana
-                page = repository.findByWeek(instant, pageable);
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-'W'ww", Locale.ENGLISH);
+                LocalDate firstDayOfWeek = LocalDate.parse(week + "-1", formatter); // Assume Monday as the first day
+                LocalDate lastDayOfWeek = firstDayOfWeek.plusDays(6);
+                Instant startOfWeek = firstDayOfWeek.atStartOfDay(ZoneOffset.UTC).toInstant();
+                Instant endOfWeek = lastDayOfWeek.plusDays(1).atStartOfDay(ZoneOffset.UTC).toInstant();
+                page = repository.findByMomentBetween(startOfWeek, endOfWeek, pageable);
             } catch (Exception e) {
                 System.err.println("Erro ao parsear a semana: " + week + " - " + e.getMessage());
                 page = repository.findAll(pageable); // Em caso de erro, busca todos
@@ -86,6 +90,45 @@ public class OrderService {
         return page.map(OrderDTO::new);
     }
 
+    public Double calculateTotalSales(String date, String month, String week) {
+        List<Order> allFilteredOrders;
+        if (date != null && !date.isEmpty()) {
+            LocalDate localDate = LocalDate.parse(date);
+            Instant startOfDay = localDate.atStartOfDay(ZoneOffset.UTC).toInstant();
+            Instant endOfDay = localDate.plusDays(1).atStartOfDay(ZoneOffset.UTC).toInstant();
+            allFilteredOrders = repository.findByMomentBetween(startOfDay, endOfDay, Pageable.unpaged()).getContent();
+        } else if (month != null && !month.isEmpty()) {
+            String[] parts = month.split("-");
+            int year = Integer.parseInt(parts[0]);
+            int monthNumber = Integer.parseInt(parts[1]);
+            LocalDate firstDayOfMonth = LocalDate.of(year, monthNumber, 1);
+            LocalDate lastDayOfMonth = firstDayOfMonth.plusMonths(1).minusDays(1);
+            Instant startOfMonth = firstDayOfMonth.atStartOfDay(ZoneOffset.UTC).toInstant();
+            Instant endOfMonth = lastDayOfMonth.plusDays(1).atStartOfDay(ZoneOffset.UTC).toInstant();
+            allFilteredOrders = repository.findByMomentBetween(startOfMonth, endOfMonth, Pageable.unpaged()).getContent();
+        } else if (week != null && !week.isEmpty()) {
+            try {
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-'W'ww", Locale.ENGLISH);
+                LocalDate firstDayOfWeek = LocalDate.parse(week + "-1", formatter); // Assume Monday as the first day
+                LocalDate lastDayOfWeek = firstDayOfWeek.plusDays(6);
+                Instant startOfWeek = firstDayOfWeek.atStartOfDay(ZoneOffset.UTC).toInstant();
+                Instant endOfWeek = lastDayOfWeek.plusDays(1).atStartOfDay(ZoneOffset.UTC).toInstant();
+                allFilteredOrders = repository.findByMomentBetween(startOfWeek, endOfWeek, Pageable.unpaged()).getContent();
+            } catch (Exception e) {
+                return 0.0; // Or handle the error as needed
+            }
+        } else {
+            allFilteredOrders = repository.findAll();
+        }
+
+        double totalSales = 0.0;
+        for (Order order : allFilteredOrders) {
+            for (OrderItem item : order.getItems()) {
+                totalSales += item.getPrice() * item.getQuantity();
+            }
+        }
+        return totalSales;
+    }
 
     @Transactional
 	public OrderDTO insert(OrderDTO dto) {
