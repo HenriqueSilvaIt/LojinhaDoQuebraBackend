@@ -33,25 +33,10 @@ public class OrderController {
     }
 
 
-
-
-
     @GetMapping
-    public ResponseEntity<Page<OrderDTO>> findAll(Pageable pageable,
-                                                  @RequestParam(value = "date", required = false) String date,
-                                                  @RequestParam(value = "month", required = false) String month,
-                                                  @RequestParam(value = "week", required = false) String week) {
-        Page<OrderDTO> page = service.findAll(pageable, date, month, week);
-        return ResponseEntity.ok(page);
-    }
-
-
-    @GetMapping(value = "/total-sales")
-    public ResponseEntity<Double> getTotalSales(@RequestParam(value = "date", required = false) String date,
-                                                @RequestParam(value = "month", required = false) String month,
-                                                @RequestParam(value = "week", required = false) String week) {
-        Double totalSales = service.calculateTotalSales(date, month, week);
-        return ResponseEntity.ok(totalSales);
+    public ResponseEntity<List<OrderDTO>> findAll() {
+        List<OrderDTO> list = service.findAll();
+        return ResponseEntity.ok(list);
     }
 
 

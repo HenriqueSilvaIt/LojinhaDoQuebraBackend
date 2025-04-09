@@ -52,79 +52,10 @@ public class OrderService {
         return new OrderDTO(order);
     }
 
-
     @Transactional(readOnly = true)
-    public Page<OrderDTO> findAll(Pageable pageable, String date, String month, String week) {
-        Page<Order> page = Page.empty();
-        if (date != null && !date.isEmpty()) {
-            LocalDate localDate = LocalDate.parse(date);
-            Instant startOfDayUTC = localDate.atStartOfDay(ZoneOffset.UTC).toInstant();
-            Instant endOfDayUTC = localDate.plusDays(1).atStartOfDay(ZoneOffset.UTC).toInstant();
-            page = repository.findByMomentBetween(startOfDayUTC, endOfDayUTC, pageable);
-        } else if (month != null && !month.isEmpty()) {
-            String[] parts = month.split("-");
-            int year = Integer.parseInt(parts[0]);
-            int monthNumber = Integer.parseInt(parts[1]);
-            LocalDate firstDayOfMonth = LocalDate.of(year, monthNumber, 1);
-            LocalDate lastDayOfMonth = firstDayOfMonth.plusMonths(1).minusDays(1);
-            Instant startOfMonthUTC = firstDayOfMonth.atStartOfDay(ZoneOffset.UTC).toInstant();
-            Instant endOfMonthUTC = lastDayOfMonth.plusDays(1).atStartOfDay(ZoneOffset.UTC).toInstant();
-            page = repository.findByMomentBetween(startOfMonthUTC, endOfMonthUTC, pageable);
-        } else if (week != null && !week.isEmpty()) {
-            try {
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-'W'ww", Locale.ENGLISH);
-                LocalDate firstDayOfWeek = LocalDate.parse(week + "-1", formatter);
-                LocalDate lastDayOfWeek = firstDayOfWeek.plusDays(6);
-                Instant startOfWeekUTC = firstDayOfWeek.atStartOfDay(ZoneOffset.UTC).toInstant();
-                Instant endOfWeekUTC = lastDayOfWeek.plusDays(1).atStartOfDay(ZoneOffset.UTC).toInstant();
-                page = repository.findByMomentBetween(startOfWeekUTC, endOfWeekUTC, pageable);
-            } catch (Exception e) {
-                System.err.println("Erro ao parsear a semana: " + week + " - " + e.getMessage());
-                page = repository.findAll(pageable); // Em caso de erro, busca paginado mesmo
-            }
-        } else {
-            page = repository.findAll(pageable);
-        }
-        return page.map(OrderDTO::new);
-    }
-    public Double calculateTotalSales(String date, String month, String week) {
-        List<Order> allFilteredOrders;
-        if (date != null && !date.isEmpty()) {
-            LocalDate localDate = LocalDate.parse(date);
-            Instant startOfDayUTC = localDate.atStartOfDay(ZoneOffset.UTC).toInstant();
-            Instant endOfDayUTC = localDate.plusDays(1).atStartOfDay(ZoneOffset.UTC).toInstant();
-            allFilteredOrders = repository.findByMomentBetween(startOfDayUTC, endOfDayUTC, Pageable.unpaged()).getContent();
-        } else if (month != null && !month.isEmpty()) {
-            String[] parts = month.split("-");
-            int year = Integer.parseInt(parts[0]);
-            int monthNumber = Integer.parseInt(parts[1]);
-            LocalDate firstDayOfMonth = LocalDate.of(year, monthNumber, 1);
-            LocalDate lastDayOfMonth = firstDayOfMonth.plusMonths(1).minusDays(1);
-            Instant startOfMonthUTC = firstDayOfMonth.atStartOfDay(ZoneOffset.UTC).toInstant();
-            Instant endOfMonthUTC = lastDayOfMonth.plusDays(1).atStartOfDay(ZoneOffset.UTC).toInstant();
-            allFilteredOrders = repository.findByMomentBetween(startOfMonthUTC, endOfMonthUTC, Pageable.unpaged()).getContent();
-        } else if (week != null && !week.isEmpty()) {
-            try {
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-'W'ww", Locale.ENGLISH);
-                LocalDate firstDayOfWeek = LocalDate.parse(week + "-1", formatter);
-                LocalDate lastDayOfWeek = firstDayOfWeek.plusDays(6);
-                Instant startOfWeekUTC = firstDayOfWeek.atStartOfDay(ZoneOffset.UTC).toInstant();
-                Instant endOfWeekUTC = lastDayOfWeek.plusDays(1).atStartOfDay(ZoneOffset.UTC).toInstant();
-                allFilteredOrders = repository.findByMomentBetween(startOfWeekUTC, endOfWeekUTC, Pageable.unpaged()).getContent();
-            } catch (Exception e) {
-                return 0.0; // Or handle the error as needed
-            }
-        } else {
-            allFilteredOrders = repository.findAll();
-        }
-
-        double totalSales = 0.0;
-        for (Order order : allFilteredOrders) {
-            for (OrderItem item : order.getItems()) {
-                totalSales += item.getPrice() * item.getQuantity();
-            }
-        }
-        return totalSales;
+    public List<OrderDTO> findAll() {
+        List<Order> result = repository.findAll();
+        return result.stream().map(x -> new OrderDTO(x)).toList();
     }
 
     @Transactional
