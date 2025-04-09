@@ -35,6 +35,7 @@ public class OrderController {
 
 
 
+
     @GetMapping
     public ResponseEntity<Page<OrderDTO>> findAll(Pageable pageable,
                                                   @RequestParam(value = "date", required = false) String date,
@@ -43,6 +44,7 @@ public class OrderController {
         Page<OrderDTO> page = service.findAll(pageable, date, month, week);
         return ResponseEntity.ok(page);
     }
+
 
     @GetMapping(value = "/total-sales")
     public ResponseEntity<Double> getTotalSales(@RequestParam(value = "date", required = false) String date,

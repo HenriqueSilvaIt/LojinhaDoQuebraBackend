@@ -7,8 +7,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
 
-import com.devsuperior.dscommerce.dto.CategoryDTO;
-import com.devsuperior.dscommerce.dto.ProductMinDTO;
+
 import com.devsuperior.dscommerce.entities.*;
 import com.devsuperior.dscommerce.services.exceptions.DatabaseException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,10 +52,10 @@ public class OrderService {
         return new OrderDTO(order);
     }
 
+
     @Transactional(readOnly = true)
     public Page<OrderDTO> findAll(Pageable pageable, String date, String month, String week) {
-        Page<Order> page;
-
+        Page<Order> page = Page.empty();
         if (date != null && !date.isEmpty()) {
             LocalDate localDate = LocalDate.parse(date);
             Instant startOfDayUTC = localDate.atStartOfDay(ZoneOffset.UTC).toInstant();
@@ -81,15 +80,13 @@ public class OrderService {
                 page = repository.findByMomentBetween(startOfWeekUTC, endOfWeekUTC, pageable);
             } catch (Exception e) {
                 System.err.println("Erro ao parsear a semana: " + week + " - " + e.getMessage());
-                page = repository.findAll(pageable); // Em caso de erro, busca todos
+                page = repository.findAll(pageable); // Em caso de erro, busca paginado mesmo
             }
         } else {
             page = repository.findAll(pageable);
         }
-
         return page.map(OrderDTO::new);
     }
-
     public Double calculateTotalSales(String date, String month, String week) {
         List<Order> allFilteredOrders;
         if (date != null && !date.isEmpty()) {
