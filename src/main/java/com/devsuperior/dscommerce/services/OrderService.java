@@ -6,7 +6,6 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
-import java.util.stream.Collectors;
 
 
 import com.devsuperior.dscommerce.entities.*;
@@ -54,9 +53,9 @@ public class OrderService {
     }
 
     @Transactional(readOnly = true)
-    public List<OrderDTO> findAll() {
-        List<Order> result = repository.findAllWithItems();
-        return result.stream().map(x -> new OrderDTO(x)).collect(Collectors.toList());
+    public Page<OrderDTO> findAll(Pageable pageable) {
+        Page<Order> result = repository.findAll(pageable);
+        return result.map(x -> new OrderDTO(x));
     }
 
     @Transactional
