@@ -39,7 +39,6 @@ public class OrderController {
         return ResponseEntity.ok(list);
     }
 
-
     @PreAuthorize("hasRole('ROLE_CLIENT')")
     @PostMapping
     public ResponseEntity<OrderDTO> insert(@Valid @RequestBody OrderDTO dto) {
