@@ -20,5 +20,5 @@ import java.util.Set;
 public interface OrderRepository extends JpaRepository<Order, Long> {
 
     @Query("SELECT DISTINCT o FROM Order o JOIN FETCH o.items")
-    List<Order> findAllWithItems();
+    Page<Order> findAllWithItems(Pageable pageable);
 }
