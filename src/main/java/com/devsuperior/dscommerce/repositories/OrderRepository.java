@@ -18,6 +18,5 @@ import java.util.Set;
 
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Long> {
-    @Query("SELECT o FROM Order o JOIN FETCH o.items")
-    Page<Order> findAllWithItems(Pageable pageable);
+
 }
