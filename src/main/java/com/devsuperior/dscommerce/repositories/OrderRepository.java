@@ -18,6 +18,5 @@ import java.util.Set;
 
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Long> {
-    @Query("SELECT DISTINCT obj FROM Order obj JOIN FETCH obj.client JOIN FETCH obj.payment LEFT JOIN FETCH obj.items WHERE ...")
-    Page<Order> findAllWithItems(Pageable pageable);
+
 }
