@@ -101,7 +101,7 @@ PC             |  Mobile📱
 ## 🚀 Como executar o projeto <a name="como-executar-o-projeto"></a>
 
 Este projeto é divido em duas partes:
-1. Frontend Web: https://github.com/HenriqueSilvaIt/LojinhaDoQuebraFrontEnd.git
+1. Frontend Web: https//github.com/HenriqueSilvaIt/LojinhaDoQuebraFrontEnd.git
 2. Backend : https://github.com/HenriqueSilvaIt/LojinhaDoQuebraBackend.git
 
 💡 Tanto o Frontend Web quanto o Mobile precisam que o Backend esteja sendo executado para funcionar
@@ -184,7 +184,7 @@ As seguintes ferramentas foram usadas na construção do projeto:
 
 -   Editor:  **[Visual Studio Code](https://code.visualstudio.com/)**
 -   Teste de API:  **[Insomnia](https://insomnia.rest/)**
-- 
+
 ---
 
 ## 🦸 Autor <a name="autor"></a>
