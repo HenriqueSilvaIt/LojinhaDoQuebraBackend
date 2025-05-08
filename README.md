@@ -165,7 +165,6 @@ $ yarn dev
 
 As seguintes ferramentas foram usadas na construção do projeto:
 
--   **[EditorConfig](https://editorconfig.org/)**
 -   **[ESLint](https://eslint.org/)**
 -   **[Prettier](https://prettier.io/)**
 
