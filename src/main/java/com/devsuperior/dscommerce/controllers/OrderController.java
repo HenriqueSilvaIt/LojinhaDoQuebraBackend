@@ -1,15 +1,21 @@
 package com.devsuperior.dscommerce.controllers;
 
 import java.net.URI;
+import java.time.LocalDate;
+import java.time.YearMonth;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 
 import javax.validation.Valid;
 
 import com.devsuperior.dscommerce.dto.CategoryDTO;
+import com.devsuperior.dscommerce.dto.HistoryDTO;
 import com.devsuperior.dscommerce.dto.ProductMinDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -32,12 +38,18 @@ public class OrderController {
         return ResponseEntity.ok(dto);
     }
 
+   @GetMapping
+   public ResponseEntity <Page<HistoryDTO>> findAll(
+           Pageable page,
+           @RequestParam(value = "minDate", defaultValue = "") String minDate,
+           @RequestParam(value = "maxDate", defaultValue = "") String maxDate
+           ) {
 
-    @GetMapping
-    public ResponseEntity<Page<OrderDTO>> findAll(Pageable pageable) {
-        Page<OrderDTO> list = service.findAll(pageable);
+        Page<HistoryDTO> list = service.findAll(minDate, maxDate, page);
+
         return ResponseEntity.ok(list);
-    }
+   }
+
 
     @PreAuthorize("hasRole('ROLE_CLIENT')")
     @PostMapping

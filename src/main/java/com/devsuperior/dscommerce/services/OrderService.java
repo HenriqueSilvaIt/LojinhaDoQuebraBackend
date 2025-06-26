@@ -1,13 +1,14 @@
 package com.devsuperior.dscommerce.services;
 
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.ZoneOffset;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.temporal.WeekFields;
 import java.util.List;
 import java.util.Locale;
 
 
+import com.devsuperior.dscommerce.dto.HistoryDTO;
 import com.devsuperior.dscommerce.entities.*;
 import com.devsuperior.dscommerce.services.exceptions.DatabaseException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,12 @@ import com.devsuperior.dscommerce.services.exceptions.ResourceNotFoundException;
 
 @Service
 public class OrderService {
+
+    // --- Ensure DEFAULT_ZONE_ID is declared here, as a class member ---
+    private final ZoneId DEFAULT_ZONE_ID = ZoneId.of("America/Sao_Paulo");
+    // --- And DATE_FORMATTER as well ---
+    private final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE;
+
 
     @Autowired
     private OrderRepository repository;
@@ -53,10 +60,63 @@ public class OrderService {
     }
 
     @Transactional(readOnly = true)
-    public Page<OrderDTO> findAll(Pageable pageable) {
-        Page<Order> result = repository.findAll(pageable);
-        return result.map(x -> new OrderDTO(x));
+    public Page<HistoryDTO>  findAll(String minDateStr, String maxDateStr, Pageable pageable) {
+
+        DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE;
+        ZoneId systemDefaultZone = ZoneId.systemDefault(); // Cache ZoneId for performance and clarity
+
+        LocalDate parsedMinDate;
+        LocalDate parsedMaxDate;
+
+        // --- Handle minDateStr ---
+        if (minDateStr != null && !minDateStr.isEmpty()) {
+            try {
+                parsedMinDate = LocalDate.parse(minDateStr, formatter);
+            } catch (DateTimeParseException e) {
+                System.err.println("Error parsing minDate: " + e.getMessage()); // Use System.err for errors
+                parsedMinDate = LocalDate.of(1900, 1, 1); // Very old date as a robust fallback
+            }
+        } else {
+            parsedMinDate = LocalDate.of(1900, 1, 1); // Default to a very old date if no minDate provided
+        }
+
+        // --- Handle maxDateStr ---
+        if (maxDateStr != null && !maxDateStr.isEmpty()) {
+            try {
+                parsedMaxDate = LocalDate.parse(maxDateStr, formatter);
+            } catch (DateTimeParseException e) {
+                System.err.println("Error parsing maxDate: " + e.getMessage());
+                parsedMaxDate = LocalDate.of(2100, 12, 31); // Very far date as a robust fallback
+            }
+        } else {
+            parsedMaxDate = LocalDate.of(2100, 12, 31); // Default to a very far date if no maxDate provided
+        }
+
+
+// Correct Conversion to Instant for Range Query using UTC
+// This ensures the Instant values are strictly UTC, regardless of JVM's default timezone.
+        Instant minInstant = parsedMinDate.atStartOfDay(ZoneOffset.UTC).toInstant();
+
+// maxInstant: Start of the day *after* the maximum date (making the range exclusive of the next day)
+// Still converting the Local Date of the *next* day to its UTC start.
+        Instant maxInstant = parsedMaxDate.plusDays(1).atStartOfDay(ZoneOffset.UTC).toInstant();
+
+// Log for debugging:
+        System.out.println("Backend received minDateStr: " + minDateStr + ", maxDateStr: " + maxDateStr);
+        System.out.println("Parsed minDate (LocalDate): " + parsedMinDate + ", maxDate (LocalDate): " + parsedMaxDate);
+        System.out.println("Converted minInstant (UTC): " + minInstant + ", maxInstant (UTC): " + maxInstant); // Should now see 00:00:00Z
+        // Log for debugging:
+        System.out.println("Backend received minDateStr: " + minDateStr + ", maxDateStr: " + maxDateStr);
+        System.out.println("Parsed minDate (LocalDate): " + parsedMinDate + ", maxDate (LocalDate): " + parsedMaxDate);
+        System.out.println("Converted minInstant: " + minInstant + ", maxInstant: " + maxInstant);
+
+        Page<HistoryDTO> list = repository.searchOrderByDate(
+                minInstant,
+                maxInstant,
+                pageable);
+        return list;
     }
+
 
     @Transactional
 	public OrderDTO insert(OrderDTO dto) {
