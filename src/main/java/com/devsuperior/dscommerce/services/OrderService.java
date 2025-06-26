@@ -9,6 +9,7 @@ import java.util.Locale;
 
 
 import com.devsuperior.dscommerce.dto.HistoryDTO;
+import com.devsuperior.dscommerce.dto.HistoryPageDTO;
 import com.devsuperior.dscommerce.entities.*;
 import com.devsuperior.dscommerce.services.exceptions.DatabaseException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,7 +61,7 @@ public class OrderService {
     }
 
     @Transactional(readOnly = true)
-    public Page<HistoryDTO>  findAll(String minDateStr, String maxDateStr, Pageable pageable) {
+    public HistoryPageDTO  findAll(String minDateStr, String maxDateStr, Pageable pageable) {
 
         DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE;
         ZoneId systemDefaultZone = ZoneId.systemDefault(); // Cache ZoneId for performance and clarity
@@ -110,11 +111,25 @@ public class OrderService {
         System.out.println("Parsed minDate (LocalDate): " + parsedMinDate + ", maxDate (LocalDate): " + parsedMaxDate);
         System.out.println("Converted minInstant: " + minInstant + ", maxInstant: " + maxInstant);
 
-        Page<HistoryDTO> list = repository.searchOrderByDate(
+
+
+        // 1. Busque a página de HistoryDTOs (como você já faz)
+        Page<HistoryDTO> historyPage = repository.searchOrderByDate(
                 minInstant,
                 maxInstant,
                 pageable);
-        return list;
+
+        // 2. Calcule o valor total para o período (sem paginação)
+        Double totalAmount = repository.calculateTotalAmountByDate(minInstant, maxInstant);
+        // Se o total for null (nenhum item), defina como 0.0
+        if (totalAmount == null) {
+            totalAmount = 0.0;
+        }
+
+        // 3. Retorne o novo DTO que contém a página e o total
+
+
+        return  new HistoryPageDTO(historyPage, totalAmount);
     }
 
 

@@ -8,9 +8,7 @@ import java.util.List;
 
 import javax.validation.Valid;
 
-import com.devsuperior.dscommerce.dto.CategoryDTO;
-import com.devsuperior.dscommerce.dto.HistoryDTO;
-import com.devsuperior.dscommerce.dto.ProductMinDTO;
+import com.devsuperior.dscommerce.dto.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,7 +19,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import com.devsuperior.dscommerce.dto.OrderDTO;
 import com.devsuperior.dscommerce.services.OrderService;
 
 @RestController
@@ -38,14 +35,16 @@ public class OrderController {
         return ResponseEntity.ok(dto);
     }
 
+
+
    @GetMapping
-   public ResponseEntity <Page<HistoryDTO>> findAll(
+   public ResponseEntity <HistoryPageDTO> findAll(
            Pageable page,
            @RequestParam(value = "minDate", defaultValue = "") String minDate,
            @RequestParam(value = "maxDate", defaultValue = "") String maxDate
            ) {
 
-        Page<HistoryDTO> list = service.findAll(minDate, maxDate, page);
+        HistoryPageDTO list = service.findAll(minDate, maxDate, page);
 
         return ResponseEntity.ok(list);
    }

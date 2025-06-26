@@ -36,19 +36,11 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
             "WHERE o.moment >= :minDate AND o.moment < :maxDate " +
             "ORDER BY o.moment DESC " )
     Page<HistoryDTO> searchOrderByDate(Instant minDate, Instant maxDate, Pageable pageable);
-/*
-    @Query("SELECT o FROM Order o WHERE TRUNC('DAY', o.moment) = :date")
-    Page<Order> findByMomentDate(@Param("date") LocalDate date, Pageable pageable);
 
-    @Query("SELECT o FROM Order o WHERE YEAR(o.moment) = :year AND MONTH(o.moment) = :month")
-    Page<Order> findByMomentMonth(@Param("year") int year, @Param("month") int month, Pageable pageable);
+    @Query("SELECT SUM(oi.price * oi.quantity) " +
+           "FROM OrderItem oi " +
+            " JOIN oi.id.order o  " +
+            "WHERE o.moment >= :minDate AND o.moment < :maxDate")
+    Double calculateTotalAmountByDate(Instant minDate, Instant maxDate);
 
-    @Query("SELECT o FROM Order o WHERE YEAR(o.moment) = :year")
-    Page<Order> findByMomentYear(@Param("year") int year, Pageable pageable);
-
-    // Consulta para filtrar por semana (ISO 8601)
-    @Query("SELECT o FROM Order o WHERE YEAR(o.moment) = :year AND WEEK(o.moment) = :week")
-    Page<Order> findByMomentWeek(@Param("year") int year, @Param("week") int week, Pageable pageable);
-
-//    Page<Order> findAll(Pageable pageable); */
 }
