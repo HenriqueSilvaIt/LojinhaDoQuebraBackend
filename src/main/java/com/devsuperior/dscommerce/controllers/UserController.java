@@ -40,7 +40,7 @@ public class UserController {
         return ResponseEntity.ok(userDTO);
     }
 
-    @PostMapping(value="/me")
+    @PostMapping
     public ResponseEntity<UserDTO>insertUser ( @RequestBody UserDTO userDTO) {
         userDTO = service.insertUser(userDTO);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(userDTO.getId()).toUri();

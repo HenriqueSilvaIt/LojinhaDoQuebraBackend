@@ -134,6 +134,26 @@ INSERT INTO tb_order_item (order_id, product_id, quantity, price) VALUES (1, 1, 
 INSERT INTO tb_order_item (order_id, product_id, quantity, price) VALUES (1, 3, 1, 1250.0);
 INSERT INTO tb_order_item (order_id, product_id, quantity, price) VALUES (2, 3, 1, 1250.0);
 INSERT INTO tb_order_item (order_id, product_id, quantity, price) VALUES (3, 1, 1, 90.5);
+INSERT INTO tb_order_item (order_id, product_id, quantity, price) VALUES (4, 2, 1, 1250.0);
+INSERT INTO tb_order_item (order_id, product_id, quantity, price) VALUES (4, 4, 1, 1250.0);
+INSERT INTO tb_order_item (order_id, product_id, quantity, price) VALUES (5, 5, 1, 1250.0);
+INSERT INTO tb_order_item (order_id, product_id, quantity, price) VALUES (6, 6, 1, 1250.0);
+INSERT INTO tb_order_item (order_id, product_id, quantity, price) VALUES (7, 7, 1, 1250.0);
+INSERT INTO tb_order_item (order_id, product_id, quantity, price) VALUES (8, 8, 1, 1250.0);
+INSERT INTO tb_order_item (order_id, product_id, quantity, price) VALUES (9, 9, 1, 1250.0);
+INSERT INTO tb_order_item (order_id, product_id, quantity, price) VALUES (10, 10, 1, 1250.0);
+INSERT INTO tb_order_item (order_id, product_id, quantity, price) VALUES (11, 11, 1, 1250.0);
+INSERT INTO tb_order_item (order_id, product_id, quantity, price) VALUES (12, 12, 1, 1250.0);
+INSERT INTO tb_order_item (order_id, product_id, quantity, price) VALUES (13, 13, 1, 1250.0);
+INSERT INTO tb_order_item (order_id, product_id, quantity, price) VALUES (14, 14, 1, 1250.0);
+INSERT INTO tb_order_item (order_id, product_id, quantity, price) VALUES (15, 16, 1, 1250.0);
+INSERT INTO tb_order_item (order_id, product_id, quantity, price) VALUES (16, 15, 1, 1250.0);
+INSERT INTO tb_order_item (order_id, product_id, quantity, price) VALUES (17, 18, 1, 1250.0);
+INSERT INTO tb_order_item (order_id, product_id, quantity, price) VALUES (18, 17, 1, 1250.0);
+INSERT INTO tb_order_item (order_id, product_id, quantity, price) VALUES (19, 19, 1, 1250.0);
+INSERT INTO tb_order_item (order_id, product_id, quantity, price) VALUES (20, 20, 1, 1250.0);
+INSERT INTO tb_order_item (order_id, product_id, quantity, price) VALUES (21, 22, 1, 1250.0);
+INSERT INTO tb_order_item (order_id, product_id, quantity, price) VALUES (22, 22, 1, 1250.0);
 
 INSERT INTO tb_payment (order_id, moment) VALUES (1, TIMESTAMP WITH TIME ZONE '2022-07-25T15:00:00Z');
 INSERT INTO tb_payment (order_id, moment) VALUES (2, TIMESTAMP WITH TIME ZONE '2022-07-30T11:00:00Z');

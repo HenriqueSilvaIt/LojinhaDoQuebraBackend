@@ -10,6 +10,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +30,8 @@ public class UserService implements UserDetailsService {
 	@Autowired
 	private RoleRepository roleRepository; // Inject RoleRepository
 
+	@Autowired
+	private PasswordEncoder passwordEncoder;
 
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -112,49 +115,21 @@ public class UserService implements UserDetailsService {
 		entity.setPassword(dto.getPassword());
 		entity.setBirthDate(dto.getBirthDate());
 
-	/*	entity.getRoles().clear();
-		for (UserDTO : entity.getId() {
-			Role = new Role();
-			role.setId(role.getId());
-			entity.getRoles().add(role);
 
-
-			   entity.getCategories().clear();
-        for (CategoryDTO catDto : dto.getCategories()) {
-        	Category cat = new Category();
-        	cat.setId(catDto.getId());
-        	entity.getCategories().add(cat);
-
-   	entity.getRoles().clear();
-		for (GrantedAuthority role : entity.getAuthorities() ) {
-			Role roleDTO = new Role();
-			roleDTO.setId(roleDTO.getId());
-			entity.getRoles().add(roleDTO);
+		// **Criptografa a senha antes de setar na entidade**
+		if (dto.getPassword() != null && !dto.getPassword().isEmpty()) {
+			entity.setPassword(passwordEncoder.encode(dto.getPassword()));
 		}
 
-        		for (GrantedAuthority role : entity.getAuthorities()) {
-			roles.add(role.getAuthority());
-				for (GrantedAuthority role : entity.getAuthorities()) {
-			roles.add(role.getAuthority());
-		}
-		}
-
-			entity.getRoles().clear();
-		for (GrantedAuthority role : entity.getAuthorities() ) {
-			Role roleDTO = new Role();
-			roleDTO.setAuthority(role.getAuthority());
-			entity.getRoles().add(roleDTO);
-		}
-
-		}*/
-
+		// Limpa as roles existentes para garantir que apenas as novas sejam adicionadas
 		entity.getRoles().clear();
-		for (GrantedAuthority role : entity.getAuthorities()) {
-			Role roleDTO = new Role();
-			roleDTO.setAuthority(role.getAuthority());
-			entity.getRoles().add(roleDTO);
+
+		// Itera sobre as roles do DTO para buscar e adicionar as roles à entidade
+		for (RoleDTO roleDto : dto.getRoles()) {
+			Role role = roleRepository.findByAuthority(roleDto.getAuthority())
+					.orElseThrow(() -> new ResourceNotFoundException("Role com ID " + roleDto.getId() + " não encontrada."));
+			entity.getRoles().add(role);
 		}
-
-
 	}
+
 }
